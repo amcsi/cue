@@ -36,6 +36,8 @@ $routes = yaml_parse('
 "/admin/logs":
     - ["authenticate"]
     - ["AdminController", "logs"]
+"*":
+    - ["ErrorController", "error404"]
 ');
 ```
 
