@@ -105,7 +105,7 @@ $applicationState = [
 require_once("vendor/autoload.php");
 $router = new Cue\Router($routes, $applicationState);
 try {
-    echo $router->invoke("/admin");
+    echo $router->invoke($_SERVER['REQUEST_URI']);
 } catch(Exception $e) {
     echo ErrorController::exceptionHandler($e);
 }
