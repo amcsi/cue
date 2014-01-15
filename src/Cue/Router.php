@@ -55,6 +55,8 @@ class Router {
                     } else {
                         array_unshift($args, $this->state);
                     }
+                } else {
+                    array_unshift($args, $this->state);
                 }
                 $buffer .= call_user_func_array($callable, $args);
             }

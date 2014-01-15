@@ -45,7 +45,9 @@ Now, define your route callables:
 <?php
 
 function authenticate($applicationState) {
-    return $applicationState['isAdmin'];
+    if(!$applicationState['isAdmin']) {
+        throw new Exception("not allowed", 401);
+    }
 }
 
 class HomeController {
@@ -76,6 +78,18 @@ class UserController {
         return $user."'s profile";
     }
 }
+
+class ErrorController {
+    public function error404() {
+        http_response_code(404);
+        return "404 not found";
+    }
+
+    public static function exceptionHandler(Exception $e) {
+        http_response_code($e->getCode());
+        return $e->getMessage();
+    }
+}
 ```
 
 Finally, invoke your URI:
@@ -88,6 +102,11 @@ $applicationState = [
     'foo' => 'bar'
 ];
 
+require_once("vendor/autoload.php");
 $router = new Cue\Router($routes, $applicationState);
-echo $router->invoke($_SERVER['REQUEST_URI']);
+try {
+    echo $router->invoke("/admin");
+} catch(Exception $e) {
+    echo ErrorController::exceptionHandler($e);
+}
 ```
