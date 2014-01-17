@@ -25,7 +25,7 @@ function home() {
 
 $routes = ['/' => 'home'];
 $router = new Cue\Router($routes);
-$router->invoke('/'); // "Hello world!"
+echo $router->invoke('/'); // "Hello world!"
 ```
 
 Here's a slightly more complete example -- first define your routes. This can be done with PHP arrays, or parsed JSON/YAML/etc:
