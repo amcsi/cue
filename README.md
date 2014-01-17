@@ -19,11 +19,13 @@ This is the most stripped down, basic usage:
 ```php
 <?php
 
+require_once "vendor/autoload.php";
+
 function home() {
     return "Hello world!";
 }
 
-$routes = ['/' => 'home'];
+$routes = ['/' => ['home']];
 $router = new Cue\Router($routes);
 echo $router->invoke('/'); // "Hello world!"
 ```
