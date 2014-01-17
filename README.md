@@ -23,7 +23,7 @@ function home() {
     return "Hello world!";
 }
 
-$routes = ['/' => ['home']];
+$routes = ['/' => 'home'];
 $router = new Cue\Router($routes);
 $router->invoke('/'); // "Hello world!"
 ```
