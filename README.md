@@ -41,10 +41,10 @@ $routes = yaml_parse('
 "/*user/profile":
     - ["UserController", "profile"]
 "/admin":
-    - ["authenticate"]
+    - "authenticate"
     - ["AdminController", "index"]
 "/admin/logs":
-    - ["authenticate"]
+    - "authenticate"
     - ["AdminController", "logs"]
 "*":
     - ["ErrorController", "error404"]

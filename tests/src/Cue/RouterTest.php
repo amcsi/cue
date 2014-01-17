@@ -18,6 +18,14 @@ class TestCaseController {
         return "This is the admin section";
     }
 
+	public function baz() {
+		return $this->state['baz'];
+	}
+
+	public static function foo($applicationState) {
+		return $applicationState['foo'];
+	}
+
     public function error404() {
         http_response_code(404);
         return "404";
@@ -26,18 +34,19 @@ class TestCaseController {
     public function userProfile($username) {
         return $username." profile";
     }
+}
 
-    public function hypotheticalSecurityCheck() {
-        if(!$this->state['user_authenticated']) {
-            throw new \Exception("You are not authorized to do that.");
-        }
-    }
+function hypotheticalSecurityCheck($applicationState) {
+	if(!$applicationState['user_authenticated']) {
+		throw new \Exception("You are not authorized to do that.");
+	}
 }
 
 class RouterTest extends \PHPUnit_Framework_TestCase {
 
     protected $uris = [];
     protected $router = null;
+	protected $applicationState = [];
 
     public function setup() {
 
@@ -49,22 +58,31 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
                 ['Cue\TestCaseController', 'userProfile']
             ],
             '/admin' => [
-                ['Cue\TestCaseController', 'hypotheticalSecurityCheck'],
+                'Cue\hypotheticalSecurityCheck',
                 ['Cue\TestCaseController', 'admin']
             ],
+			'/foo' => [
+				['Cue\TestCaseController', 'foo']
+			],
+			'/baz' => [
+				['Cue\TestCaseController', 'baz']
+			],
             '*' => [
                 ['Cue\TestCaseController', 'error404']
             ]
         );
 
-        $app['user_authenticated'] = false;
+        $this->applicationState['user_authenticated'] = false;
+		$this->applicationState['foo'] = 'bar';
+		$this->applicationState['baz'] = 'quz';
 
-        $this->router = new Router($this->uris, $app);
+        $this->router = new Router($this->uris, $this->applicationState);
     }
 
     public function testHelloWorld() {
         $this->assertEquals($this->router->match("/"), $this->uris["/"]);
         $this->assertEquals($this->router->invoke("/"), "Hello world");
+		$this->assertEquals($this->router->getState(), $this->applicationState);
     }
 
     /**
@@ -89,5 +107,15 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
     public function testCaptureVariable() {
         $this->assertEquals($this->router->invoke("/user/john/profile"), "john profile");
     }
+
+	public function testNoMatch() {
+		$router = new Router([]);
+		$this->assertEquals([], $router->match("/"));
+		$this->assertEquals("", $router->invoke("/"));
+	}
+
+	public function testStaticCall() {
+		$this->assertEquals($this->applicationState['foo'], $this->router->invoke("/foo"));
+	}
 }
  
